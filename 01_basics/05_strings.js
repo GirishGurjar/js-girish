@@ -31,3 +31,6 @@ const url = "https://javawithgirish/girish%20gurjar"
 console.log(url.replace('%20','-'));
 
 console.log(gameName.split('-'));
+console.log(url.includes('suresh'))
+
+ 

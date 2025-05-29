@@ -10,12 +10,12 @@
 // console.log(null >= 0);
 
 
-console.log(undefined > 0);
-console.log(undefined = 0);
-console.log(undefined >= 0);
+// console.log(undefined > 0);
+// console.log(undefined = 0);
+// console.log(undefined >= 0);
 
-
-console.log("2"===2);
+//strict check  -it will check value as well as datatypes
+console.log("2"===2); //error , not similar datatypes
 
 
 
