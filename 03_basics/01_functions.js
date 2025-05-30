@@ -49,4 +49,43 @@ function loginUserMessage(username = "someone") {
 
 //console.log(loginUserMessage("girish"))
 
-console.log(loginUserMessage())   // if no value passed then output "undefined"
+//console.log(loginUserMessage())   // if no value passed then output "undefined"
+
+
+
+// how to pass multiple value , (params passing methods)
+function calculateCartPrice(...num1) {    /// rest operator
+//function calculateCartPrice(val1,val2, ...num1) {   // print only rest values except value
+    return num1
+    
+}
+//console.log(calculateCartPrice(200,400,500,3000));
+
+
+const user = {
+    usern : "girish",
+    price : 200
+}
+
+function handleobject(any) {
+    console.log(`Username is ${any.usern} price is  ${any.price}`);
+    
+    
+}
+// handleobject(user)
+handleobject({
+    usern : " sam",
+    price : 399
+})
+
+//array function
+
+const myNewarray  = [100,200,300]
+
+
+function returnSecondValue(getArray) {
+    return getArray[2]
+}
+
+//console.log(returnSecondValue(myNewarray));
+console.log(returnSecondValue([200,300,600,400,650]));
