@@ -20,14 +20,14 @@ console.log(ins);
 // navbar(company = "girish")
 
 
-// json syntax
+// json syntax , APIS in  objects
 // {
 //     name : "girish",
 //     coursename: "js course ",
 //     price : "free"
 // }
 
-// APIS in format of array
+// APIS in format of array  , JSON format
 [
 {},
 {},
