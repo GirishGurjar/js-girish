@@ -1,0 +1,82 @@
+JAVASCRIPT EXECUTION CONTEXT
+
+js run the code in two phase  
+{} ---> global execution context, ( for ex this is kept in this global ex - window side)
+JS is single threaded language 
+
+
+1. global execution context 
+2. Function/functional execution context
+3. Eval/evaluation execution context - global ex
+
+
+
+// suppose this is code -- >  {}    -- memory creation phase - 
+in memory creation phase me space allocation hota for ex var,declaration , but no execution
+execution phase - me execute hoti hai , - operations
+
+
+ let val2 = 10
+ let val1 = 5
+function addNum(num1,num2) {
+
+    let total = num1 + num2 
+    return total
+}
+let result1 = addNum(val1,val2)
+let result2 = addNum(19,2)
+
+STEPS FOR CODE EXECTION FORTHE ABOVE CODE 
+
+STEP-1  ----------------- global execute allocation in this
+
+STEP 2 ------------------[Memory phase 
+      val1 --> undefined
+      val2 --> undefined
+  addNum --> defination
+   result1 --> undefined
+   result2 --->undefined
+      ]  ///memory allocated 
+
+STEP 3  -----------Exection Phase 
+
+val1 = 10
+val2 = 5
+
+addNum --> "create new execution context
+(new variable environment + execution thread
+
+ it will repeat step 1 nd step 2 
+val1 --> undefined
+val2 --> undefined
+total --> undefined
+
+execute context 
+num1 = 5
+num2 =10
+total = 15  --"return key" it will return in global execution context
+
+)
+
+after all process and execution it will also delete the values 
+
+now again for deleted part
+
+New variable environment + thread 
+now it will repeat all three steps and process
+
+
+hence this it is it.
+
+*************************************************************************************
+
+What is CALL STACK ?
+
+
+stack process works in - Last IN FIRST OUT process lifo
+go to console > go to source > create snippet and check call stack
+
+
+
+   
+
