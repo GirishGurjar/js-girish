@@ -24,3 +24,15 @@ function removeDupfromStr(str){
 
     const uniquestr = []
 }
+
+//check if palindrome
+
+function isPalindrome(str) {
+    const cleanedStr = str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+    const reversedStr = cleanedStr.split('').reverse().join('');
+    return cleanedStr === reversedStr;
+}
+
+console.log(isPalindrome('A man, a plan')); // Output: false
+console.log(isPalindrome('A man, a plan, a canal, Panama')); // Output: true
+console.log(isPalindrome('carracecar'))
