@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dom- Girish js coding </title>
+</head>
+<body>
+    <div class="parent">
+        <!-- comment -->
+        <div class = "day">Monday</div>
+        <div class = "day">Tuesday</div>
+        <div class = "day">Wednesday</div>
+        <div class = "day">Thursday</div>
+    </div>
+</body>
+
+<script>
+const parent = document.querySelector('.parent')
+// console.log(parent);
+// console.log(parent.children); // returns HTMLCollection of child elements
+// console.log(parent.children[1].innerHTML);
+// console.log(parent.childNodes); // returns NodeList of all child nodes (including text nodes)
+// console.log(parent.firstChild); // returns the first child node
+// console.log(parent.firstElementChild); // returns the first child elemen
+
+// for (let i = 0; i < parent.children.length; i++) {
+//     console.log(parent.children[i].innerHTML);
+// }
+parent.children[1].style.color = 'red'; // Change the color of the second child element
+console.log(parent.firstElementChild);
+
+
+const dayOne = document.querySelector('.day').style.color = 'blue'; // Change the color of the first element with class 'day'      
+
+// console.log(dayOne); // This will log the color of the first 'day' element, which is now blue
+// console.log(dayOne.parentElement);
+//  console.log(dayOne.parentNode); // This will log the parent node of the first 'day' element, which is the 'div' with class 'parent'
+// console.log(dayOne.nextElementSibling); // This will log the next sibling element of the first 'day' element, which is the second 'day' element
+// console.log(dayOne.previousElementSibling); // This will log the previous sibling element of the first 'day' element, which is null since it is the first child
+// console.log(dayOne.nextSibling); // This will log the next sibling node of the first 'day' element, which is a text node (whitespace)
+// console.log(dayOne.previousSibling); // This will log the previous sibling node of the first 'day' element, which is null since it is the first child
+// console.log(dayOne.childNodes); // This will log the child nodes of the first 'day' element, which is an empty NodeList since it has no children
+
+console.log("NODES:", parent.childNodes); // Logs all child nodes including text nodes
+
+
+
+</script>
+</html>
