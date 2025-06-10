@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="start" style="background-color: blue;"> Start</button>
+    <button id="stop" style="background-color:brown"> Stop</button>
+    <h1>girish coding</h1>
+
+</body>
+<script>
+const sayGirish = () => {
+    console.log("girish coding");
+    const h1 = document.querySelector('h1');
+    h1.textContent = "girish coding";
+    h1.style.color = "red"; 
+}
+    setTimeout(sayGirish, 2000)
+
+
+    document.querySelector('#stop').addEventListener('click', function(e){
+        console.log("stop clicked");
+        clearTimeout(changeMe);
+    }, false)
+</script>
+</html>
