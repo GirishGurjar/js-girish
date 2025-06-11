@@ -6,11 +6,11 @@
 
 # Solution code 
 ## project 1
+
 ```javascript
+ColorChanging
 
 console.log("Girish")
-
-##project 1 - change color
 
 const buttons = document.querySelectorAll('.button');
 console.log(buttons);
