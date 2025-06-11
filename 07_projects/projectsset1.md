@@ -5,11 +5,12 @@
 [click here ] 
 
 # Solution code 
-## project 1
 
+## project 1 Color-Changer
+ 
 
 ```javascript
-ColorChanging
+
 
 console.log("Girish")
 
