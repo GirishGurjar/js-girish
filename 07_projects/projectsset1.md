@@ -47,10 +47,10 @@ buttons.forEach(function (button) {
 
 
 
-## project 2 
+## project 2 BMI Calculator
 
 ```javascript 
- BMI Calculator solution
+ 
 
 
 const form = document.querySelector('form');
