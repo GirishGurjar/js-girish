@@ -7,6 +7,7 @@
 # Solution code 
 ## project 1
 
+
 ```javascript
 ColorChanging
 
@@ -43,6 +44,9 @@ buttons.forEach(function (button) {
 
 
 ```
+
+
+
 ## project 2 
 
 ```javascript 
@@ -77,5 +81,21 @@ form.addEventListener('submit', function (e) {
 });
 
 
+
+```
+## project 3 clock
+
+```javascript
+
+const clock = document.getElementById('clock')
+
+//const clock = document.querySelector('clock')
+
+
+setInterval(function(){
+  let date = new Date()
+  //console.log(date.toLocaleTimeString())
+  clock.innerHTML = date.toLocaleTimeString();
+}, 1000)
 
 ```
