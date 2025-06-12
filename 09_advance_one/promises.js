@@ -38,4 +38,4 @@ const promiseThree = new Promise(function(resolve, reject){
 })
 promiseThree.then(function(user){
     console.log(user)
-})
+});
