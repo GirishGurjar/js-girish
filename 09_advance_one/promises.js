@@ -31,11 +31,37 @@ setTimeout(function(){
 
 
 const promiseThree = new Promise(function(resolve, reject){
-    setTimeout(function(user){
+    setTimeout(function(){
        // console.log('Async task 3 completed');
-        resolve({username: 'Girish', age: 25}); 
+        resolve({username: 'Girish', age: 25, email: 'example@gmail.com'}); 
     }, 1000);
 })
 promiseThree.then(function(user){
     console.log(user)
 });
+
+
+const promiseFour = new Promise(function(resolve,reject){
+
+    setTimeout (function(){
+let error = true;
+if(error) {
+    resolve({
+        username: 'Girish',
+        age: 25,
+        email: 'g@gmail.com'
+    }) 
+    }else{
+    reject('Error: Something went wrong');
+}
+
+    }, 1000);
+})
+const username = promiseFour.then((user) => {
+    console.log(user);
+ return user.username;    
+}).then((username) => {
+    console.log(username);
+}).catch(function(error){
+    console.error(error);
+})
