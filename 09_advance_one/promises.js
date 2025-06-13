@@ -140,3 +140,6 @@ fetch('https://jsonplaceholder.typicode.com/users')
     .catch((error) => {
         console.error('Error fetching users:', error);
     });
+
+
+    
