@@ -19,11 +19,17 @@ function createUser(username, score) {
 
 createUser.prototype.increment = function () {
     score++;
-}
-const car = createUser("innova", 100);
-const bike = createUser("bullet", 200);
- 
 
+}
+
+createUser.prototype.printMe = function () {
+    console.log(`Username: ${this.username}, Score: ${this.score}`);
+}
+const car =  new createUser("innova", 100);
+const bike = new createUser("bullet", 200);
+ 
+car.printMe();
+bike.printMe();
 /* 
 This code defines a function `multiplyBy5` that takes a number as an argument and returns the number multiplied by 5. It also adds a property `power` to the function, which is set to 2. When the function is called with an argument of 10, it returns 50, and accessing the `power` property returns 2.
 // This demonstrates that functions in JavaScript are first-class objects, meaning they can have properties and methods just like any other object.
@@ -32,5 +38,5 @@ This code defines a function `multiplyBy5` that takes a number as an argument an
 // This allows for more flexible and powerful programming patterns, such as creating function factories or adding metadata to functions.
 
 */
-
+  
 
