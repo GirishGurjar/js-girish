@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDUKUL Inquiry Form</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7fc;
+    margin: 0; padding: 0;
+    display: flex; justify-content: center; align-items: center; min-height: 100vh;
+  }
+  .form-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%; max-width: 500px;
+  }
+  h2 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  @media(max-width: 600px) {
+    .form-container { padding: 20px; }
+    input, select, button { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>EDUKUL Inquiry Form</h2>
+  <form id="inquiryForm">
+    <label for="fullName">Full Name</label>
+    <input type="text" id="fullName" name="fullName" required>
+
+    <label for="contact">Contact</label>
+    <input type="text" id="contact" name="contact" required pattern="\d{10}" title="10-digit number">
+
+    <label for="classStandard">Class/Standard</label>
+    <input type="text" id="classStandard" name="classStandard">
+
+    <label for="enquireFor">Enquire for</label>
+    <input type="text" id="enquireFor" name="enquireFor">
+
+    <label for="enquirySource">Enquiry Source</label>
+    <select id="enquirySource" name="enquirySource" required>
+      <option value="">Select Source</option>
+      <option>Cold Call</option>
+      <option>Referral</option>
+      <option>Walk-in</option>
+      <option>Social Media</option>
+      <option>Other</option>
+    </select>
+
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('inquiryForm');
+  const scriptURL = "https://script.google.com/macros/s/AKfycbyfT7wkl1REAOt9CIAx3zW9UhR19bwq3coVnW5PrzaXkd_loqMjojecnwS9zCUYeyA2/exec";
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    let data = {};
+    formData.forEach((value, key) => data[key] = value);
+
+    fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(result => {
+      if(result.result === "success"){
+        alert('Submission saved to Google Sheet!');
+        form.reset();
+      } else {
+        alert('Error saving submission: ' + result.message);
+      }
+    })
+    .catch(error => alert('Error submitting the form: ' + error.message));
+  });
+</script>
+
+</body>
+</html>
