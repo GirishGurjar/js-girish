@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDUKUL Inquiry Form</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f7fc;
+    }
+    h1, h2 {
+      color: #007bff;
+      text-align: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .form-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .form-container label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    .form-container input, .form-container select, .form-container textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .form-container button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin-top: 20px;
+    }
+    .form-container button:hover {
+      background-color: #0056b3;
+    }
+    /* Header and Footer Styles */
+    header, footer {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .form-container {
+        padding: 15px;
+      }
+      .form-container input, .form-container select, .form-container textarea, .form-container button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="https://play-lh.googleusercontent.com/9klPjdZDDN59N_Yj-kjjuUc5zPYOFM7aonTdy7olK8GljK5WhGheqWu6BZMNQo-8VVlg" alt="EDUKUL Logo" style="max-width: 150px;">
+</header>
+
+<div class="container">
+  <div class="form-container">
+    <h1>Inquiry Form</h1>
+    <form id="inquiryForm">
+    
+      <input type="date" id="inquiryDate" name="inquiryDate" required>
+
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" name="fullName" required>
+
+      <label for="contact">Contact</label>
+      <input type="text" id="contact" name="contact" required pattern="\d{10}" title="10-digit number">
+
+      <label for="classStandard">Class/Standard</label>
+      <input type="text" id="classStandard" name="classStandard" required>
+
+      <label for="enquireFor">Enquire for</label>
+      <input type="text" id="enquireFor" name="enquireFor">
+
+      <label for="enquirySource">Enquiry Source</label>
+      
+      <select id="enquirySource" name="enquirySource" required>
+        <option value="">Select Source</option>
+        <option>Cold Call</option>
+        <option>Referral</option>
+        <option>Walk-in</option>
+        <option>Social Media</option>
+        <option>Other</option>
+      </select>
+
+      <label for="assignedTo">Assigned To</label>
+      <input type="text" id="assignedTo" name="assignedTo" required>
+      <label for="comments">Comments</label>
+      <textarea id="comments" name="comments"></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Edukul Classes | All Rights Reserved</p>
+</footer>
+
+<script>
+  const form = document.getElementById('inquiryForm');
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyfT7wkl1REAOt9CIAx3zW9UhR19bwq3coVnW5PrzaXkd_loqMjojecnwS9zCUYeyA2/exec'; // Replace with your Web App URL
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    let data = {};
+    formData.forEach((value, key) => data[key] = value);
+
+    fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(result => {
+      if (result.result === 'success') {
+        alert('Submission saved to Google Sheet!');
+        form.reset();
+      } else {
+        alert('Error saving submission: ' + result.message);
+      }
+    })
+    .catch(error => alert('Error submitting the form: ' + error.message));
+  });
+</script>
+
+</body>
+</html>
