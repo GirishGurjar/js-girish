@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Lead Submission / स्कूल लीड सबमिशन</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+    background: #f0f4f8;
+  }
+
+  h2 {
+    text-align: center;
+    color: #1a73e8;
+    margin-bottom: 30px;
+  }
+
+  form {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: border 0.3s, box-shadow 0.3s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 8px rgba(26, 115, 232, 0.2);
+    outline: none;
+  }
+
+  button {
+    margin-top: 25px;
+    padding: 12px 25px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #1666c1;
+    transform: translateY(-2px);
+  }
+
+  /* Responsive for Mobile */
+  @media (max-width: 600px) {
+    body { padding: 15px; }
+    form { padding: 20px; }
+    input, select, textarea, button { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<h2>School Lead Submission / स्कूल लीड सबमिशन</h2>
+<form id="leadForm">
+  <label>School Name / स्कूल का नाम</label>
+  <input type="text" name="schoolName" required>
+
+  <label>School Address / स्कूल का पता</label>
+  <textarea name="schoolAddress" required></textarea>
+
+  <label>City / शहर</label>
+  <input type="text" name="city" required>
+
+  <label>District / ज़िला</label>
+  <select name="district" required>
+    <option value="">Select District</option>
+    <option>Gwalior</option>
+    <option>Bhopal</option>
+    <option>Sagar</option>
+  </select>
+
+  <label>Contact Name / संपर्क का नाम</label>
+  <input type="text" name="contactName" required>
+
+  <label>Designation / पद</label>
+  <select name="designation" required>
+    <option value="">Select</option>
+    <option>Principal</option>
+    <option>Admin</option>
+    <option>Teacher</option>
+    <option>Other</option>
+  </select>
+
+  <label>Phone Number / फ़ोन नंबर</label>
+  <input type="text" name="phone"  title="10-digit number">
+
+  <label>Email / ईमेल</label>
+  <input type="email" name="email">
+
+  <label>Source / स्रोत</label>
+  <select name="source" required>
+    <option value="">Select Source</option>
+    <option>Cold Call</option>
+    <option>Referral</option>
+    <option>Walk-in</option>
+    <option>Social Media</option>
+    <option>Other</option>
+  </select>
+
+  <label>Interested in Test Series / टेस्ट सीरीज़ में रुचि</label>
+  <select name="interested">
+    <option value="">Select</option>
+    <option>Yes</option>
+    <option>No</option>
+  </select>
+
+  <label>Preferred Class / पसंदीदा कक्षा</label>
+  <select name="preferredClass" multiple>
+    <option>6th</option>
+    <option>7th</option>
+    <option>8th</option>
+    <option>9th</option>
+    <option>10th</option>
+    <option>11th</option>
+    <option>12th</option>
+  </select>
+
+  <label>Remarks / टिप्पणियाँ</label>
+  <textarea name="remarks"></textarea>
+
+  <label>Next Follow-up Date / अगली फॉलो-अप तिथि</label>
+  <input type="date" name="followup">
+
+  <label>Responsible Executive / जिम्मेदार कार्यकारी</label>
+  <select name="executive" required>
+    <option value="">Select Executive</option>
+    <option>Abhishek Sharma</option>
+    <option>Yash Tiwari</option>
+  </select>
+
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+const form = document.getElementById('leadForm');
+const scriptURL = "https://script.google.com/macros/s/AKfycbydGmt38n-kHdR7ZgMrKehPbMHo_ZBkf4RTFUuD3fIvZrseMha1itcl6S5F9SSufSfC5A/exec";
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  let data = {};
+  formData.forEach((value, key) => data[key] = value);
+
+  fetch(scriptURL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(() => {
+    alert('Submission saved to Google Sheet!');
+    form.reset();
+  })
+  .catch(error => alert('Error submitting the form. Please try again.'));
+});
+</script>
+
+</body>
+</html>
