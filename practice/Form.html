@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>EDUKUL Inquiry Form</title>
 <style>
   /* --- Base Layout --- */
+  * {
+    box-sizing: border-box;
+  }
+
   body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(180deg, #eaf2ff, #ffffff);
@@ -24,8 +28,12 @@
     border-radius: 15px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     width: 100%;
-    max-width: 420px;
+    max-width: 450px;
     margin: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 90vh;
   }
 
   /* --- Logo Section --- */
@@ -38,6 +46,7 @@
     width: 85px;
     height: 85px;
     border-radius: 10px;
+    object-fit: contain;
   }
 
   /* --- Title --- */
@@ -61,7 +70,7 @@
   input,
   select {
     width: 100%;
-    padding: 11px 12px;
+    padding: 12px 14px;
     margin-top: 6px;
     border-radius: 8px;
     border: 1px solid #cfd8e3;
@@ -102,19 +111,24 @@
     margin-top: 18px;
     font-size: 13px;
     color: #666;
+    flex-shrink: 0;
+  }
+
+  /* --- Scrollable form area --- */
+  .form-inner {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 4px;
   }
 
   /* --- Mobile Optimization --- */
-  @media (max-width: 600px) {
-    body {
-      padding: 15px;
-      background: #f5f9ff;
-    }
+  @media (max-width: 768px) {
     .form-container {
       padding: 25px 20px;
       border-radius: 12px;
-      margin: 0;
-      box-shadow: none;
+      max-height: 95vh;
+      min-height: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
     h2 {
       font-size: 1.4rem;
@@ -126,6 +140,19 @@
       font-size: 14px;
     }
   }
+
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+    .form-container {
+      padding: 20px 15px;
+      border-radius: 10px;
+    }
+    h2 {
+      font-size: 1.3rem;
+    }
+  }
 </style>
 </head>
 <body>
@@ -133,13 +160,11 @@
 <div class="form-container" role="main" aria-label="EDUKUL Inquiry Form">
   <div class="top" aria-hidden="false">
     <div class="logo">
-      <!-- logo (you can replace src with your logo file) -->
       <img src="https://play-lh.googleusercontent.com/9klPjdZDDN59N_Yj-kjjuUc5zPYOFM7aonTdy7olK8GljK5WhGheqWu6BZMNQo-8VVlg" alt="EDUKUL Logo">
     </div>
     <h2>EDUKUL Inquiry Form</h2>
   </div>
 
-  <!-- scrollable area so keyboard won't hide fields -->
   <div class="form-inner">
     <form id="InquiryForm">
       <label for="fullName">Full Name</label>
@@ -166,7 +191,6 @@
     </form>
   </div>
 
-  <!-- actions kept outside scrollable area so always visible -->
   <div class="actions">
     <button class="btn-submit" id="submitBtn" type="button">Submit Inquiry</button>
   </div>
@@ -175,40 +199,30 @@
 </div>
 
 <script>
-  // Submit logic: button outside form -> requestSubmit() on form
   const form = document.getElementById('InquiryForm');
   const submitBtn = document.getElementById('submitBtn');
   const scriptURL = "https://script.google.com/macros/s/AKfycbxaPMwDliiZUmPZ9r6aqRtvCmONZbCepNEjwPCPByQEBebrSS4N_STnnt4LvS36e9IV/exec";
 
   submitBtn.addEventListener('click', () => {
-    // this triggers standard form submit event (so validation runs)
     if (typeof form.requestSubmit === 'function') {
       form.requestSubmit();
     } else {
-      // fallback
       form.submit();
     }
   });
 
-  // Actual form submit handler (uses FormData + fetch)
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    // build FormData
     const formData = new FormData(form);
-
-    // send to Apps Script endpoint (if deployed as exec and accessible)
     fetch(scriptURL, { method: 'POST', body: formData })
       .then(r => r.text())
       .then(() => {
-        // show friendly inline confirmation rather than blocking alert
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitted ✓';
         setTimeout(() => {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Submit Inquiry';
           form.reset();
-          // scroll to top of card so the user sees the header/title again
           document.querySelector('.form-container').scrollIntoView({behavior:'smooth'});
         }, 1200);
       })
