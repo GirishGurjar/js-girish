@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EDUKUL — Student Report</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  body { background: linear-gradient(180deg,#f3f6fb,#ffffff); font-family: Inter,system-ui,Arial; }
+  .card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 8px 24px rgba(14,30,37,0.06); }
+  .muted { color: #6b7280; }
+  .small { font-size:13px; color:#6b7280; }
+  .stat { border-radius:10px; padding:10px; background:#f8fafc; text-align:center; }
+</style>
+</head>
+<body>
+<div class="max-w-4xl mx-auto p-6">
+
+  <!-- Search area -->
+  <div id="searchArea" class="mb-4">
+    <div class="card flex items-center gap-3">
+      <img src="https://cdn.razorpay.com/logos/NMTURjAnNH1AQ5_large.png" alt="EDUKUL" style="height:56px">
+      <div class="flex-1">
+        <h1 class="text-xl font-semibold">Student Report</h1>
+        <div class="small">Enter Roll No and press Search → then generate PDF</div>
+      </div>
+      <div>
+        <input id="rollInput" class="border p-2 rounded mr-2" placeholder="Enter Roll No (e.g. 251179)">
+        <button class="bg-blue-600 text-white px-4 py-2 rounded" onclick="onSearch()">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT container -->
+  <div id="reportContainer" class="card" style="display:none">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-4">
+        <img id="studentPhoto" src="https://via.placeholder.com/100" class="w-20 h-20 rounded-md object-cover border">
+        <div>
+          <div class="text-lg font-bold" id="studentName">Student Name</div>
+          <div class="small" id="studentBatchClass">Batch / Class</div>
+          <div class="small" id="studentRollView">Roll: -</div>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="small">Last updated: <span id="lastUpdated">-</span></div>
+        <div class="mt-2 stat"><div class="small">Total Quizzes</div><div id="totalQuizzes" class="font-bold text-xl">0</div></div>
+      </div>
+    </div>
+
+    <!-- summary cards -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <div class="stat">
+        <div class="small">Overall Avg %</div>
+        <div id="overallAvg" class="font-bold text-lg">0%</div>
+      </div>
+      <div class="stat">
+        <div class="small">Best Rank</div>
+        <div id="bestRank" class="font-bold text-lg">-</div>
+      </div>
+      <div class="stat">
+        <div class="small">Weak Subject</div>
+        <div id="weakSub" class="font-bold text-lg">-</div>
+      </div>
+    </div>
+
+    <!-- subject summary -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <div class="card" id="physicsCard">
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="small">Physics</div>
+            <div id="physicsCount" class="font-bold text-lg">0 attempts</div>
+            <div class="small">Avg: <span id="physicsAvg">0</span>%</div>
+          </div>
+          <div>
+            <div class="small">Correct</div>
+            <div id="physicsCorrect" class="font-bold">0</div>
+            <div class="small">Wrong</div>
+            <div id="physicsWrong">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="chemistryCard">
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="small">Chemistry</div>
+            <div id="chemistryCount" class="font-bold text-lg">0 attempts</div>
+            <div class="small">Avg: <span id="chemistryAvg">0</span>%</div>
+          </div>
+          <div>
+            <div class="small">Correct</div>
+            <div id="chemistryCorrect" class="font-bold">0</div>
+            <div class="small">Wrong</div>
+            <div id="chemistryWrong">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="mathsCard">
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="small">Maths</div>
+            <div id="mathsCount" class="font-bold text-lg">0 attempts</div>
+            <div class="small">Avg: <span id="mathsAvg">0</span>%</div>
+          </div>
+          <div>
+            <div class="small">Correct</div>
+            <div id="mathsCorrect" class="font-bold">0</div>
+            <div class="small">Wrong</div>
+            <div id="mathsWrong">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- graphs -->
+    <div class="mb-4">
+      <h3 class="font-semibold mb-2">Progress (Quiz % over time)</h3>
+      <canvas id="overallChart" height="100"></canvas>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+      <div class="card">
+        <div class="small mb-2">Physics Progress</div>
+        <canvas id="physicsChart" height="100"></canvas>
+      </div>
+      <div class="card">
+        <div class="small mb-2">Chemistry Progress</div>
+        <canvas id="chemistryChart" height="100"></canvas>
+      </div>
+      <div class="card">
+        <div class="small mb-2">Maths Progress</div>
+        <canvas id="mathsChart" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- recent tests -->
+    <div class="mb-4">
+      <h3 class="font-semibold mb-2">Recent Quizzes (latest 10)</h3>
+      <div id="recentList" class="small"></div>
+    </div>
+
+    <!-- actions -->
+    <div class="flex justify-end gap-2">
+      <button class="bg-indigo-600 text-white px-4 py-2 rounded" onclick="savePdfToDrive()">Save PDF to Drive</button>
+      <button class="bg-green-600 text-white px-4 py-2 rounded" onclick="downloadPdf()">Download PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzT6C6xqCefkHQTzcO-E210f1ifFcmf0YwF9uHh5DpDKsnNyZhFRdMLnc2wLj_Uh3Id/exec';
+let charts = {};
+
+async function serverFetch(roll){
+  const res = await fetch(SCRIPT_URL+'?roll='+encodeURIComponent(roll));
+  const json = await res.json();
+  return json;
+}
+
+async function onSearch(){
+  const roll = document.getElementById('rollInput').value.trim();
+  if(!roll) return alert('Enter Roll No');
+  try{
+    const data = await serverFetch(roll);
+    if(data.error) return alert(data.error);
+    document.getElementById('reportContainer').style.display='block';
+    populateReport(data);
+  } catch(e){
+    alert('Fetch failed: '+e);
+  }
+}
+
+function populateReport(data){
+  const st = data.student || {};
+  document.getElementById('studentName').innerText = st.name || '-';
+  document.getElementById('studentBatchClass').innerText = (st.batch||'-')+' / '+(st.clazz||'-');
+  document.getElementById('studentRollView').innerText = 'Roll: '+(st.roll||'-');
+  document.getElementById('studentPhoto').src = st.photo || 'https://via.placeholder.com/100';
+
+  const summary = data.overall || {};
+  document.getElementById('lastUpdated').innerText = summary.lastTestDate || '-';
+  document.getElementById('totalQuizzes').innerText = summary.totalQuizzes || 0;
+  document.getElementById('overallAvg').innerText = (summary.avgPercent||0)+'%';
+  document.getElementById('bestRank').innerText = summary.bestRank || '-';
+  document.getElementById('weakSub').innerText = data.weakSubject || '-';
+
+  const ss = data.subjectSummary || {};
+  ['Physics','Chemistry','Maths'].forEach(sub=>{
+    const s = ss[sub]||{totalQuiz:0,avgPercent:0,totalCorrect:0,totalWrong:0,trend:[]};
+    document.getElementById(sub.toLowerCase()+'Count').innerText = s.totalQuiz+' attempts';
+    document.getElementById(sub.toLowerCase()+'Avg').innerText = s.avgPercent;
+    document.getElementById(sub.toLowerCase()+'Correct').innerText = s.totalCorrect;
+    document.getElementById(sub.toLowerCase()+'Wrong').innerText = s.totalWrong;
+
+    // charts
+    renderLineChart(sub.toLowerCase()+'Chart', s.trend.map(x=>x.date), s.trend.map(x=>x.percent), sub+' %', ['#0ea5e9','#16a34a','#ef4444'][['Physics','Chemistry','Maths'].indexOf(sub)]);
+  });
+
+  // overall chart
+  renderLineChart('overallChart', summary.trend?.map(x=>x.date)||[], summary.trend?.map(x=>x.percent)||[], 'Overall %', '#2563eb');
+
+  // recent tests
+  const recent = data.recentTests || [];
+  document.getElementById('recentList').innerHTML = recent.map(r=>{
+    return `<div class="p-2 border-b">${r.dateStr} — ${r.testName} — ${r.percent||'-'}% — ${r.subject||'-'} — Quiz# ${r.quizNo||'-'} — Batch: ${r.batch||'-'}</div>`;
+  }).join('');
+}
+
+// chart helper
+function renderLineChart(canvasId, labels, dataPoints, label, color){
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  if(charts[canvasId]?.destroy) charts[canvasId].destroy();
+  charts[canvasId] = new Chart(ctx,{
+    type:'line',
+    data:{labels:labels||[], datasets:[{label,label,data:dataPoints||[],borderColor:color,backgroundColor:'rgba(0,0,0,0)',tension:0.25,pointRadius:4}]},
+    options:{scales:{y:{beginAtZero:true,max:100}},plugins:{legend:{display:false}}}
+  });
+}
+
+// PDF
+async function downloadPdf(){
+  const search = document.getElementById('searchArea'); search.style.display='none';
+  const el = document.getElementById('reportContainer'); await new Promise(r=>setTimeout(r,120));
+  const canvas = await html2canvas(el,{scale:2});
+  const img = canvas.toDataURL('image/png');
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p','pt','a4');
+  const pdfW = pdf.internal.pageSize.getWidth();
+  const pdfH = (canvas.height * pdfW)/canvas.width;
+  pdf.addImage(img,'PNG',0,0,pdfW,pdfH);
+  pdf.save('EDUKUL_Report_'+document.getElementById('studentRollView').innerText+'.pdf');
+  search.style.display='block';
+}
+
+async function savePdfToDrive(){
+  alert('Drive-save works only when served via Apps Script HTML');
+}
+</script>
+</body>
+</html>
