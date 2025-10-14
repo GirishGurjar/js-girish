@@ -176,14 +176,21 @@
   const scriptURL = "https://script.google.com/macros/s/AKfycbxaPMwDliiZUmPZ9r6aqRtvCmONZbCepNEjwPCPByQEBebrSS4N_STnnt4LvS36e9IV/exec";
 
   submitBtn.addEventListener('click', () => {
-    // this triggers standard form submit event (so validation runs)
-    if (typeof form.requestSubmit === 'function') {
-      form.requestSubmit();
-    } else {
-      // fallback
-      form.submit();
-    }
-  });
+  // this triggers standard form submit event (so validation runs)
+  if (typeof form.requestSubmit === 'function') {
+    form.requestSubmit();
+  } else {
+    // fallback
+    form.submit();
+  }
+
+  // After submission
+  submitBtn.textContent = "Inquiry Submitted ✅"; // change button text
+  submitBtn.disabled = true;                      // disable the button
+  submitBtn.style.backgroundColor = "#ccc";       // optional visual change
+  submitBtn.style.cursor = "not-allowed";         // feedback to user
+});
+
 
   // Actual form submit handler (uses FormData + fetch)
   form.addEventListener('submit', function (e) {
@@ -215,3 +222,4 @@
 </script>
 </body>
 </html>
+
