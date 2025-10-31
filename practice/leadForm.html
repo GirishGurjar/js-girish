@@ -79,17 +79,20 @@
 
 <h2>School Lead Submission / स्कूल लीड सबमिशन</h2>
 <form id="leadForm">
-  <label>Institute Name</label>
-  <!-- <input type="text" name="schoolName" required> -->
-<select name="schoolName" required>
-  
-<option value="">Select Institute type</option>
-  <option>School</option>
+  <label>Institute Type / संस्था का प्रकार</label>
+  <select name="schoolType" required>
+    <option value="">Select Institute Type</option>
+    <option>School</option>
     <option>Coaching</option>
-  
+    <option>College</option>
+    <option>Training Center</option>
+  </select>
+
+  <label>Institute Name / संस्था का नाम</label>
+  <input type="text" name="schoolName" required>
+
   <label>Address / पता</label>
   <textarea name="schoolAddress" required></textarea>
-
   <label>City / शहर</label>
   <input type="text" name="city" required>
 
@@ -196,5 +199,6 @@ form.addEventListener('submit', e => {
 </body>
 
 </html>
+
 
 
