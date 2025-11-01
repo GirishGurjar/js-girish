@@ -1,184 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Edukul Class 10 Board Test Series 2025–26</title>
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Slab:wght@400;600&display=swap" rel="stylesheet">
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Slab:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+
+<!-- html2pdf for download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-  :root {
-    --blue: #004080;
-    --orange: #FF7F27;
-    --light-bg: #f5f7fb;
+  :root{
+    --blue:#004080;
+    --orange:#FF7F27;
+    --muted:#667085;
+    --card:#ffffff;
+    --bg-top: linear-gradient(180deg,#01203a 0%, #0b3d66 40%);
+    --max-width: 1100px;
   }
+  html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:var(--bg-top), #f3f7fb;color:#0b1220;}
+  .wrap{max-width:var(--max-width);margin:28px auto;padding:0 18px;}
+  header{background:#fff;border-radius:12px;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 30px rgba(2,6,23,0.15);}
+  header .left{display:flex;align-items:center;gap:18px}
+  header img{height:56px;display:block}
+  .title{font-family:'Roboto Slab', serif;color:var(--blue)}
+  .subtitle{color:var(--muted);font-size:14px}
+  .download-btn{background:var(--orange);color:#fff;padding:10px 16px;border-radius:8px;border:0;font-weight:700;cursor:pointer}
+  .download-btn:hover{filter:brightness(.95)}
 
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, var(--blue) 0%, #1b3a63 40%, var(--light-bg) 100%);
-    color: #222;
-  }
+  .hero{margin-top:18px;background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));padding:28px;border-radius:12px;color:#fff;display:flex;flex-direction:row;gap:20px;align-items:center}
+  .hero-left{flex:1}
+  .hero h1{font-family:'Roboto Slab',serif;margin:0;font-size:26px;color:#fff}
+  .hero p{margin:8px 0 0;color:rgba(255,255,255,0.92)}
+  .pill{background:#fff;color:var(--blue);padding:8px 12px;border-radius:999px;font-weight:700;margin-left:auto}
 
-  header {
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 60px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-  }
+  /* content cards */
+  .cards{display:grid;grid-template-columns:1fr 360px;gap:22px;margin-top:20px}
+  .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+  h2{margin:0 0 12px 0;color:var(--blue);font-size:18px;font-family:'Roboto Slab',serif}
+  p.lead{color:var(--muted);margin-top:6px}
 
-  header img {
-    height: 55px;
-  }
+  /* timetable table */
+  table.timetable{width:100%;border-collapse:collapse;font-size:14px}
+  table.timetable th{background:var(--blue);color:white;padding:10px;text-align:left;font-weight:700}
+  table.timetable td{padding:10px;border-bottom:1px solid #eef2f7;color:#0b1220}
+  table.timetable tr:nth-child(even){background:#fbfdff}
 
-  .btn-download {
-    background: var(--orange);
-    color: white;
-    text-decoration: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-weight: 600;
-    transition: 0.3s;
-  }
-  .btn-download:hover { background: #e66910; }
+  .small{font-size:13px;color:var(--muted)}
 
-  .hero {
-    text-align: center;
-    padding: 60px 20px 40px;
-    color: white;
-  }
+  /* right column */
+  .right-col{display:flex;flex-direction:column;gap:16px}
+  .highlight{display:flex;gap:12px;align-items:flex-start}
+  .highlight .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);margin-top:6px}
+  .highlight .text{font-weight:600}
 
-  .hero h1 {
-    font-family: 'Roboto Slab', serif;
-    font-size: 36px;
-    margin: 0;
-  }
+  .qr-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;border-radius:8px;border:1px dashed #e6eefc}
+  .qr-wrap img{width:150px;height:150px;background:#fff;padding:8px;border-radius:8px}
+  .cta-register{background:var(--blue);color:#fff;padding:10px 12px;border-radius:8px;border:0;font-weight:700;cursor:pointer}
+  .cta-register:hover{filter:brightness(.95)}
 
-  .hero p {
-    font-size: 18px;
-    margin-top: 10px;
-  }
+  footer{margin-top:26px;text-align:center;color:#e6eefc;font-size:13px;padding:18px}
 
-  .section {
-    background: white;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 50px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    margin-bottom: 50px;
-  }
+  /* modal */
+  .modal{display:none;position:fixed;inset:0;background:rgba(2,6,23,0.6);backdrop-filter:blur(4px);justify-content:center;align-items:center;z-index:9999}
+  .modal .box{background:#fff;padding:22px;border-radius:10px;max-width:420px;width:92%}
+  .modal h3{margin:0 0 12px}
+  .modal input{width:100%;padding:10px;border-radius:6px;border:1px solid #d7dfe9;margin:8px 0}
+  .modal .flex{display:flex;gap:8px;align-items:center}
+  .modal .send{background:var(--orange);color:#fff;border:0;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:700}
+  .modal .verify{background:var(--blue);color:#fff;border:0;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:700}
 
-  h2 {
-    color: var(--blue);
-    border-left: 5px solid var(--orange);
-    padding-left: 10px;
-    margin-bottom: 20px;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  ul li::before {
-    content: "✔";
-    color: var(--orange);
-    margin-right: 10px;
-    font-weight: bold;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  th, td {
-    border: 1px solid #ccc;
-    padding: 10px 12px;
-    text-align: center;
-  }
-
-  th {
-    background: var(--blue);
-    color: white;
-  }
-
-  .register {
-    text-align: center;
-    padding: 30px 0;
-  }
-
-  .register button {
-    background: var(--orange);
-    color: white;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    padding: 14px 40px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-
-  .register button:hover { background: #e66910; }
-
-  footer {
-    text-align: center;
-    color: #eee;
-    padding: 20px 10px 40px;
-    background: var(--blue);
+  @media (max-width:980px){
+    .cards{grid-template-columns:1fr}
+    .right-col{order:2}
+    header{padding:12px}
+    .hero{flex-direction:column;align-items:flex-start}
   }
 </style>
 </head>
-
 <body>
+
+<div class="wrap">
   <header>
-    <img src="https://cdn.razorpay.com/logos/NMTURjAnNH1AQ5_large.png" alt="EDUKUL" style="height:56px">
-    <!-- <a class="btn-download" href="Edukul_Class10_BoardTestSeries_2025-26_Smart.pdf" download>⬇️ Download Brochure</a> -->
+    <div class="left">
+      <img src="https://cdn.razorpay.com/logos/NMTURjAnNH1AQ5_large.png" alt="Edukul logo">
+      <div>
+        <div class="title">Edukul Classes</div>
+        <div class="subtitle">Class 10 Board Test Series — 2025–26</div>
+      </div>
+    </div>
+
+    <div>
+      <button class="download-btn" id="btnOpenRegister">Download Brochure</button>
+    </div>
   </header>
 
-  <section class="hero">
-    <h1>EdukulClasses 10th Board Test Series 2025–26</h1>
-    <p>Prepare Smart • Perform Better • Achieve Excellence</p>
-  </section>
+  <div class="hero" role="banner" aria-label="Edukul Test Series Hero">
+    <div class="hero-left">
+      <h1>Edukul Class 10 Board Test Series 2025–26</h1>
+      <p>Every Sunday • Offline full & sectional mocks • Result within 72 hours • Unlimited doubt sessions with Edukul faculty</p>
+      <div style="margin-top:12px;">
+        <span style="background:#fff;padding:8px 10px;border-radius:8px;color:var(--blue);font-weight:700">Starts: 23 Nov 2025</span>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div class="pill">15–20 Tests (Weekends)</div>
+    </div>
+  </div>
 
-  <section class="section">
-    <h2>Highlights</h2>
-    <ul>
-      <li>📅 Every Sunday | Offline Test</li>
-      <li>🕒 Result within 72 hours with complete analysis</li>
-      <li>👨‍🏫 Doubt discussion with Edukul elite faculty</li>
-      <li>📘 15 Full Mock Tests covering complete syllabus</li>
-    </ul>
-  </section>
+  <div class="cards">
+    <section class="card" id="brochureContent" aria-labelledby="timetableTitle">
+      <h2 id="timetableTitle">Sunday Test Timetable (Dates & Topics)</h2>
+      <p class="small">All tests are offline at Edukul centre. Timings: <strong>9:00 AM – 12:00 PM</strong> unless otherwise notified.</p>
 
-  <section class="section">
-    <h2>Sunday Test Schedule</h2>
-    <table>
-      <tr><th>Date</th><th>Subjects</th><th>Test Type</th><th>Remarks</th></tr>
-      <tr><td>Nov 23, 2025</td><td>Science, Math</td><td>Foundation Mock 1</td><td>Kickstart Board Mode</td></tr>
-      <tr><td>Nov 30, 2025</td><td>English, SST, Hindi</td><td>Foundation Mock 2</td><td>Concept Focus</td></tr>
-      <tr><td>Dec 7, 2025</td><td>Science</td><td>Revision Mock 1</td><td>Conceptual & Numerical</td></tr>
-      <tr><td>Dec 14, 2025</td><td>Math</td><td>Revision Mock 2</td><td>Formula Based</td></tr>
-      <tr><td>Jan 4, 2026</td><td>Science</td><td>Full Syllabus Mock 1</td><td>3-hour Test</td></tr>
-      <tr><td>Jan 11, 2026</td><td>Math</td><td>Full Syllabus Mock 2</td><td>Step Marking Evaluation</td></tr>
-      <tr><td>Feb 8, 2026</td><td>All Subjects</td><td>Grand Mock 2</td><td>Final Board Prep</td></tr>
-    </table>
-  </section>
+      <table class="timetable" aria-describedby="timetableTitle">
+        <thead>
+          <tr><th style="width:140px">Date (Sun)</th><th style="width:160px">Subject</th><th>Topics / Coverage</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Nov 23, 2025</td><td>Science</td><td>Light — Reflection & Refraction; Human Eye (Short + Numericals)</td></tr>
+          <tr><td>Nov 30, 2025</td><td>Math</td><td>Real Numbers & Polynomials; Concept Practice</td></tr>
+          <tr><td>Dec 07, 2025</td><td>English</td><td>Letter to God, Nelson Mandela; Grammar (Tenses, Clauses)</td></tr>
+          <tr><td>Dec 14, 2025</td><td>Social Science</td><td>Resources & Development; Agriculture; Map Work</td></tr>
+          <tr><td>Dec 21, 2025</td><td>Science</td><td>Electricity — Current, Circuits & Numericals</td></tr>
+          <tr><td>Dec 28, 2025</td><td>Hindi</td><td>Kahani Sankalan; Vyakaran (Sandhi, Samas)</td></tr>
+          <tr><td>Jan 04, 2026</td><td>Math</td><td>Linear Equations; Word Problems; Quick Revision</td></tr>
+          <tr><td>Jan 11, 2026</td><td>Science</td><td>Chemical Reactions; Metals & Non-metals — Reactions & Equations</td></tr>
+          <tr><td>Jan 18, 2026</td><td>English</td><td>Writing Skills: Letter, Notice, Analytical Paragraphs; Poem Revision</td></tr>
+          <tr><td>Jan 25, 2026</td><td>Social Science</td><td>Nationalism in India; Democracy; Important Dates & Maps</td></tr>
+          <tr><td>Feb 01, 2026</td><td>Hindi</td><td>Gadya & Kavya Revision; Comprehension & Writing</td></tr>
+          <tr><td>Feb 08, 2026</td><td>All Subjects (Pre-Board 1)</td><td>Full Syllabus — Board pattern (Timed)</td></tr>
+          <tr><td>Feb 15, 2026</td><td>All Subjects (Pre-Board 2)</td><td>Full Syllabus — Step marking & Answer presentation</td></tr>
+          <tr><td>Feb 22, 2026</td><td>All Subjects (Final Practice)</td><td>Important Chapters — Rapid revision & speed practice</td></tr>
+          <tr><td>Feb 24–26, 2026</td><td>Analysis</td><td>Result cards, parent meeting & final guidance before boards</td></tr>
+        </tbody>
+      </table>
 
-  <section class="register">
-    <h2>Register Now</h2>
-    <button onclick="window.location.href='https://edukulclasses.com';">Go to Edukul Website</button>
-  </section>
+      <div style="margin-top:18px;">
+        <h3 style="margin:0 0 6px 0;color:var(--blue);font-size:16px">Test Type & Marking</h3>
+        <p class="small">Most subject tests: 80 marks format where applicable; Chapter tests 25–40 marks. Full pre-boards follow exact board pattern with step marking and time limits.</p>
+      </div>
 
-  <footer>
-    <p>© 2025 Edukul Classes | www.edukulclasses.com | Gwalior, Madhya Pradesh</p>
-  </footer>
+      <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+        <div style="background:#f6fbff;padding:12px;border-radius:8px;border-left:4px solid var(--blue);min-width:220px;">
+          <strong>Result Turnaround</strong><br><span class="small">Detailed printed + soft copy within 72 hours. Topic-wise analysis included.</span>
+        </div>
+        <div style="background:#fff7ef;padding:12px;border-radius:8px;border-left:4px solid var(--orange);min-width:220px;">
+          <strong>Faculty Support</strong><br><span class="small">Unlimited offline doubt sessions (scheduled after each test).</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card right-col" aria-labelledby="ctaTitle">
+      <div>
+        <h2 id="ctaTitle">Why Join Edukul Sunday Series?</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+          <div class="highlight"><div class="dot"></div><div class="text">Consistency with weekly practice</div></div>
+          <div class="highlight"><div class="dot"></div><div class="text">Real exam environment & timings</div></div>
+          <div class="highlight"><div class="dot"></div><div class="text">Printed reports & personalised feedback</div></div>
+          <div class="highlight"><div class="dot"></div><div class="text">Parent meets after pre-boards</div></div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="qr-wrap">
+        <img alt="QR code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://edukulclasses.com" />
+        <div style="font-weight:700">Scan to Register</div>
+        <button class="cta-register" id="btnRegisterNow">Register Now</button>
+      </div>
+
+      <div style="margin-top:12px;text-align:left" class="small">
+        <strong>Contact</strong><br>
+        Edukul Classes, City Centre, Gwalior<br>
+        📞 +91-99936 77778<br>
+        ✉️ info@edukulclasses.com
+      </div>
+    </aside>
+  </div>
+
+  <footer>© Edukul Classes — Prepare Smart • Perform Better • Achieve Excellence</footer>
+</div>
+
+<!-- Registration Modal -->
+<div class="modal" id="modalReg" role="dialog" aria-modal="true" aria-labelledby="regTitle">
+  <div class="box">
+    <h3 id="regTitle">Register to download brochure</h3>
+    <input id="regName" type="text" placeholder="Full name" />
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-weight:700">+91</span>
+      <input id="regPhone" type="tel" placeholder="10-digit mobile number" maxlength="10" />
+    </div>
+    <div id="recaptcha-container" style="margin:10px 0"></div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="send" id="sendOtpBtn">Send OTP</button>
+      <button class="send" id="closeModal" style="background:#cbd5e1">Cancel</button>
+    </div>
+
+    <div id="otpArea" style="margin-top:12px;display:none">
+      <input id="otpInput" type="text" placeholder="Enter OTP" />
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="verify" id="verifyBtn">Verify & Download</button>
+      </div>
+    </div>
+
+    <div id="regMsg" style="margin-top:10px;color:var(--muted);font-size:13px"></div>
+  </div>
+</div>
+
+<script>
+/* ====== FIREBASE CONFIG - replace the placeholders with your project values ====== */
+const firebaseConfig = {
+  apiKey: "AIzaSyXXXX...",
+  authDomain: "edukul-otp.firebaseapp.com",
+  projectId: "edukul-otp",
+  storageBucket: "edukul-otp.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abcdef12345"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+/* Modal handlers */
+const modal = document.getElementById('modalReg');
+const btnOpen = document.getElementById('btnOpenRegister');
+const btnRegisterNow = document.getElementById('btnRegisterNow');
+const closeModal = document.getElementById('closeModal');
+btnOpen.addEventListener('click', openModal);
+btnRegisterNow.addEventListener('click', openModal);
+closeModal.addEventListener('click', () => modal.style.display='none');
+
+function openModal(){
+  document.getElementById('regMsg').textContent='';
+  document.getElementById('regName').value='';
+  document.getElementById('regPhone').value='';
+  document.getElementById('otpArea').style.display='none';
+  modal.style.display='flex';
+
+  // render reCAPTCHA (invisible)
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    'size': 'invisible',
+    'callback': function(response) {
+      // reCAPTCHA solved, allow sendOTP to proceed
+    }
+  });
+  recaptchaVerifier.render().catch(()=>{ /* ignore if already rendered */ });
+}
+
+/* OTP flow */
+let confirmationResult;
+document.getElementById('sendOtpBtn').addEventListener('click', () => {
+  const name = document.getElementById('regName').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  if(!name){ alert('Please enter full name'); return; }
+  if(!/^\d{10}$/.test(phone)){ alert('Enter a valid 10-digit Indian mobile number'); return; }
+
+  const fullPhone = '+91' + phone;
+  document.getElementById('regMsg').textContent = 'Sending OTP...';
+  auth.signInWithPhoneNumber(fullPhone, window.recaptchaVerifier)
+    .then(result => {
+      confirmationResult = result;
+      document.getElementById('otpArea').style.display = 'block';
+      document.getElementById('regMsg').textContent = 'OTP sent to ' + fullPhone;
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Failed to send OTP: ' + (err.message || err));
+      document.getElementById('regMsg').textContent = '';
+    });
+});
+
+document.getElementById('verifyBtn').addEventListener('click', () => {
+  const code = document.getElementById('otpInput').value.trim();
+  if(!code){ alert('Enter OTP'); return; }
+  document.getElementById('regMsg').textContent = 'Verifying...';
+  confirmationResult.confirm(code).then(res => {
+    document.getElementById('regMsg').textContent = 'Verified! Preparing download...';
+    modal.style.display = 'none';
+    // optionally: store the lead (name + phone) in Firebase DB / Sheet - skipped for now
+    downloadBrochurePDF();
+  }).catch(err => {
+    console.error(err);
+    alert('OTP verification failed. Try again.');
+    document.getElementById('regMsg').textContent = '';
+  });
+});
+
+/* download function - exports entire brochure area as PDF */
+function downloadBrochurePDF(){
+  const el = document.getElementById('brochureContent');
+  const opt = {
+    margin: 0.5,
+    filename: 'Edukul_Class10_TestSeries_Brochure_2025-26.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(el).save();
+}
+</script>
 </body>
 </html>
-
