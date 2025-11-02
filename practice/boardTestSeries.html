@@ -97,14 +97,14 @@
     </div>
 
     <div>
-      <button class="download-btn" id="btnOpenRegister">Download Brochure</button>
+      <button class="btn-download" onclick="openModal()">Download Brochure</button>
     </div>
   </header>
 
   <div class="hero" role="banner" aria-label="Edukul Test Series Hero">
     <div class="hero-left">
       <h1>Edukul Class 10 Board Test Series 2025–26</h1>
-      <p>Every Sunday • Offline full & sectional mocks • Result within 72 hours • Unlimited doubt sessions with Edukul faculty</p>
+      <p>10 Full-Length Mock Tests | Every Sunday | Offline at Edukul Centers • Result within 72 hours • Unlimited doubt sessions with Edukul faculty</p>
       <div style="margin-top:12px;">
         <span style="background:#fff;padding:8px 10px;border-radius:8px;color:var(--blue);font-weight:700">Starts: 23 Nov 2025</span>
       </div>
@@ -183,43 +183,28 @@
 </div>
 
 <!-- Registration Modal -->
-<div class="modal" id="modalReg" role="dialog" aria-modal="true" aria-labelledby="regTitle">
-  <div class="box">
-    <h3 id="regTitle">Register to download brochure</h3>
-    <input id="regName" type="text" placeholder="Full name" />
-    <div style="display:flex;gap:8px;align-items:center;">
-      <span style="font-weight:700">+91</span>
-      <input id="regPhone" type="tel" placeholder="10-digit mobile number" maxlength="10" />
-    </div>
-    <div id="recaptcha-container" style="margin:10px 0"></div>
-    <div style="display:flex;gap:10px;margin-top:8px;">
-      <button class="send" id="sendOtpBtn">Send OTP</button>
-      <button class="send" id="closeModal" style="background:#cbd5e1">Cancel</button>
-    </div>
-
-    <div id="otpArea" style="margin-top:12px;display:none">
-      <input id="otpInput" type="text" placeholder="Enter OTP" />
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="verify" id="verifyBtn">Verify & Download</button>
-      </div>
-    </div>
-
-    <div id="regMsg" style="margin-top:10px;color:var(--muted);font-size:13px"></div>
+<!-- Modal -->
+<div id="modal">
+  <div class="content">
+    <h3>Download Brochure</h3>
+    <input type="text" id="name" placeholder="Enter your full name" required>
+    <input type="tel" id="phone" placeholder="Enter contact number" maxlength="10" required>
+    <button onclick="downloadBrochure()">Download</button>
   </div>
 </div>
 
 <script>
 /* ====== FIREBASE CONFIG - replace the placeholders with your project values ====== */
-const firebaseConfig = {
-  apiKey: "AIzaSyXXXX...",
-  authDomain: "edukul-otp.firebaseapp.com",
-  projectId: "edukul-otp",
-  storageBucket: "edukul-otp.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234567890:web:abcdef12345"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+// const firebaseConfig = {
+//   apiKey: "AIzaSyXXXX...",
+//   authDomain: "edukul-otp.firebaseapp.com",
+//   projectId: "edukul-otp",
+//   storageBucket: "edukul-otp.appspot.com",
+//   messagingSenderId: "1234567890",
+//   appId: "1:1234567890:web:abcdef12345"
+// };
+// firebase.initializeApp(firebaseConfig);
+// const auth = firebase.auth();
 
 /* Modal handlers */
 const modal = document.getElementById('modalReg');
@@ -287,20 +272,28 @@ document.getElementById('verifyBtn').addEventListener('click', () => {
 });
 
 /* download function - exports entire brochure area as PDF */
-function downloadBrochurePDF(){
-  const el = document.getElementById('brochureContent');
-  const opt = {
-    margin: 0.5,
-    filename: 'Edukul_Class10_TestSeries_Brochure_2025-26.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(el).save();
-}
-</script>
+<script>
+  function openModal() {
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function downloadBrochure() {
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    if (name === "" || phone.length !== 10 || isNaN(phone)) {
+      alert("Please enter a valid name and 10-digit Indian phone number.");
+      return;
+    }
+
+    document.getElementById('modal').style.display = 'none';
+    const element = document.getElementById('brochure-content');
+    html2pdf().from(element).save('Edukul_Class10_MockTest_Brochure.pdf');
+  }
+</script></script>
 </body>
 </html>
+
 
 
 
