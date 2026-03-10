@@ -168,64 +168,58 @@
 
   <div class="footer">© EDUKUL Classes 2026</div>
 </div>
+
 <script>
+  // Submit logic: button outside form -> requestSubmit() on form
+  const form = document.getElementById('InquiryForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxaPMwDliiZUmPZ9r6aqRtvCmONZbCepNEjwPCPByQEBebrSS4N_STnnt4LvS36e9IV/exec";
 
-const form = document.getElementById('InquiryForm');
-const submitBtn = document.getElementById('submitBtn');
-
-submitBtn.addEventListener('click', () => {
-
-  const contact = document.getElementById("contact").value;
-
-  if(contact.length !== 10){
-    alert("Please enter valid 10 digit mobile number");
-    return;
-  }
-
-  // Check duplicate number in browser
-  const savedNumbers = JSON.parse(localStorage.getItem("submittedNumbers")) || [];
-
-  if(savedNumbers.includes(contact)){
-    alert("This mobile number has already submitted the form.");
-    return;
-  }
-
-  // Save number
-  savedNumbers.push(contact);
-  localStorage.setItem("submittedNumbers", JSON.stringify(savedNumbers));
-
-  // Submit form
+  submitBtn.addEventListener('click', () => {
+  // this triggers standard form submit event (so validation runs)
   if (typeof form.requestSubmit === 'function') {
     form.requestSubmit();
   } else {
+    // fallback
     form.submit();
   }
 
-  submitBtn.textContent = "Inquiry Submitted ✅";
-  submitBtn.disabled = true;
-  submitBtn.style.backgroundColor = "#ccc";
-  submitBtn.style.cursor = "not-allowed";
-
+  // After submission
+  submitBtn.textContent = "Inquiry Submitted ✅"; // change button text
+  submitBtn.disabled = true;                      // disable the button
+  submitBtn.style.backgroundColor = "#ccc";       // optional visual change
+  submitBtn.style.cursor = "not-allowed";         // feedback to user
 });
 
-form.addEventListener('submit', function (e) {
-  e.preventDefault();
 
-  const formData = new FormData(form);
+  // Actual form submit handler (uses FormData + fetch)
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-  fetch("YOUR_SCRIPT_URL", { method: 'POST', body: formData })
-  .then(res => res.text())
-  .then(() => {
-    form.reset();
-  })
-  .catch(err => {
-    alert("Error submitting form");
+    // build FormData
+    const formData = new FormData(form);
+
+    // send to Apps Script endpoint (if deployed as exec and accessible)
+    fetch(scriptURL, { method: 'POST', body: formData })
+      .then(r => r.text())
+      .then(() => {
+        // show friendly inline confirmation rather than blocking alert
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitted ✓';
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Inquiry';
+          form.reset();
+          // scroll to top of card so the user sees the header/title again
+          document.querySelector('.form-container').scrollIntoView({behavior:'smooth'});
+        }, 1200);
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error submitting the form: ' + (err && err.message ? err.message : err));
+      });
   });
-
-});
-
-</script>
-</body>
+</script>'</body>
 </html>
 
 
