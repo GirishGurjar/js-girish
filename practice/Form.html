@@ -217,6 +217,7 @@
     fetch(scriptURL, { method: 'POST', body: formData })
       .then(r => r.text())
       .then(() => {
+        alert("Form has been submitted successfully!");
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitted ✓';
         setTimeout(() => {
