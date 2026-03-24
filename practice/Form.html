@@ -204,34 +204,49 @@
   const submitBtn = document.getElementById('submitBtn');
   const scriptURL = "https://script.google.com/macros/s/AKfycbxaPMwDliiZUmPZ9r6aqRtvCmONZbCepNEjwPCPByQEBebrSS4N_STnnt4LvS36e9IV/exec";
 
-  // submitBtn.addEventListener('click', () => {
-  //   if (typeof form.requestSubmit === 'function') {
-  //     form.requestSubmit();
-  //   } else {
-  //     form.submit();
-  //   }
-  // });
+  let isSubmitting = false;
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+
+    // Prevent multiple clicks
+    if (isSubmitting) return;
+    isSubmitting = true;
+
+    // UI loading state
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
     const formData = new FormData(form);
-    fetch(scriptURL, { method: 'POST', body: formData })
-      .then(r => r.text())
-      .then(() => {
-        alert("Form has been submitted successfully!");
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitted ✓';
-        setTimeout(() => {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit Inquiry';
-          form.reset();
-          document.querySelector('.form-container').scrollIntoView({behavior:'smooth'});
-        }, 1200);
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Error submitting the form: ' + (err && err.message ? err.message : err));
-      });
+
+    fetch(scriptURL, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+      console.log("Success:", data);
+
+      submitBtn.textContent = "Submitted ✓";
+      alert("Form has been submitted successfully!");
+
+      form.reset();
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Error submitting form. Please try again.");
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Inquiry";
+    })
+    .finally(() => {
+      // Reset after short delay
+      setTimeout(() => {
+        isSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Inquiry";
+      }, 1500);
+    });
   });
 </script>
 </body>
