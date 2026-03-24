@@ -219,23 +219,19 @@
       method: 'POST',
       body: formData
     })
-    .then(res => res.text())
-    .then(data => {
-      console.log("Success:", data);
+   .then(res => res.json())
+.then(data => {
+  console.log(data);
 
-      submitBtn.textContent = "Submitted ✓";
-      alert("Form submitted successfully!");
-
-      form.reset();
-    })
-    .catch(err => {
-      console.error("Error:", err);
-      alert("Error submitting form");
-
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit Inquiry";
-    })
-    .finally(() => {
+  if (data.status === "success") {
+    submitBtn.textContent = "Submitted ✓";
+    alert("Form submitted successfully!");
+    form.reset();
+  } else {
+    throw new Error(data.message || "Submission failed");
+  }
+})
+       .finally(() => {
       setTimeout(() => {
         isSubmitting = false;
         submitBtn.disabled = false;
