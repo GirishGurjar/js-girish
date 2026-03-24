@@ -204,13 +204,13 @@
   const submitBtn = document.getElementById('submitBtn');
   const scriptURL = "https://script.google.com/macros/s/AKfycbxaPMwDliiZUmPZ9r6aqRtvCmONZbCepNEjwPCPByQEBebrSS4N_STnnt4LvS36e9IV/exec";
 
-  submitBtn.addEventListener('click', () => {
-    if (typeof form.requestSubmit === 'function') {
-      form.requestSubmit();
-    } else {
-      form.submit();
-    }
-  });
+  // submitBtn.addEventListener('click', () => {
+  //   if (typeof form.requestSubmit === 'function') {
+  //     form.requestSubmit();
+  //   } else {
+  //     form.submit();
+  //   }
+  // });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
