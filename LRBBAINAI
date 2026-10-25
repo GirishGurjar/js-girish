@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seating Logic Lab: Think Like an AI</title>
+<style>
+:root{--bg:#0b1220;--card:#131c31;--card2:#1a2542;--tx:#e8eefc;--mut:#9fb0d3;--b:#4f8cff;--v:#8b5cf6;--c:#22d3ee;--ok:#34d399;--bad:#f87171;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(1000px 500px at 15% -10%,#2a3a8a55,transparent),var(--bg);color:var(--tx);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+.wrap{max-width:920px;margin:0 auto;padding:16px}
+h1{font-size:clamp(24px,5vw,38px);margin:8px 0 4px;line-height:1.15}
+h1 span{background:linear-gradient(90deg,var(--b),var(--v),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:22px;margin:0 0 8px}h3{font-size:17px;margin:14px 0 4px;color:var(--c)}
+.card{background:var(--card);border:1px solid #2a3a66;border-radius:18px;padding:18px;margin:14px 0}
+.mut{color:var(--mut)}
+.chip{display:inline-block;padding:2px 12px;border-radius:99px;background:var(--card2);border:1px solid var(--v);color:#c9b8ff;font-size:14px;font-weight:600}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid var(--b);background:var(--card2);color:var(--tx);padding:10px 16px;min-height:44px}
+button:hover:not(:disabled){background:#243464}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.pri{background:linear-gradient(90deg,var(--b),var(--v));border:0;font-weight:700}
+:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.bar{height:10px;background:var(--card2);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--c));transition:width .3s}
+.hud{display:flex;justify-content:space-between;gap:10px;margin:8px 0 6px;font-weight:600}
+.op{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:8px 0;font-size:18px}
+.op b{display:grid;place-items:center;min-width:30px;height:30px;border-radius:50%;background:var(--bg);border:1px solid var(--b)}
+.op.sel{border-color:var(--c);background:#16385a}.op.ok{border-color:var(--ok);background:#0f3a2e}.op.bad{border-color:var(--bad);background:#40191f}
+.op:disabled{opacity:1;cursor:default}
+ol.cl{margin:6px 0 0;padding-left:22px}ol.cl li{margin:4px 0}
+.fb{padding:12px;border-radius:12px;margin-top:12px}.fb.ok{background:#0f3a2e;border:1px solid var(--ok)}.fb.bad{background:#40191f;border:1px solid var(--bad)}
+svg{width:100%;height:auto;max-width:640px;display:block;margin:8px auto}
+.seat{fill:#1a2542;stroke:#4f8cff;stroke-width:2}.seat.hl{fill:#22d3ee33;stroke:#22d3ee;stroke-width:4}
+.nm{fill:#e8eefc;font:700 24px system-ui}.lb{fill:#9fb0d3;font:14px system-ui}.lk{stroke:#8b5cf6;stroke-width:2;stroke-dasharray:5 4}.lk.hl{stroke:#22d3ee;stroke-width:3}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.big{font-size:56px;font-weight:800;line-height:1}
+input,textarea{font:inherit;width:100%;max-width:440px;padding:10px 12px;border-radius:10px;border:1px solid var(--b);background:var(--bg);color:var(--tx)}
+label{font-weight:600}
+table{width:100%;border-collapse:collapse}th,td{padding:8px;border-bottom:1px solid #2a3a66;text-align:left}
+@media(max-width:520px){.wrap{padding:10px}.card{padding:14px}.op{font-size:16px}}
+</style></head><body>
+<div class="wrap">
+<h1>Seating Logic Lab: <span>Think Like an AI</span></h1>
+<div id="hud" hidden><div class="hud"><span id="qn"></span><span id="sc"></span></div><div class="bar"><i id="pb"></i></div></div>
+<main id="app"></main>
+</div>
+<script>
+const L=["1","2","3","4"];
+const P=[
+{t:"Linear row",title:"Puzzle 1 · Six friends in a row",setup:"Six friends A, B, C, D, E and F sit in a row. All of them face North, so their left is West and their right is East.",
+people:["D","A","F","C","B","E"],
+clues:["A sits second from the left end.","F sits immediately to the right of A.","C sits immediately to the right of F.","E sits at the extreme right end.","B sits between C and E."],
+steps:["Draw 6 seats, Seat 1 (left) to Seat 6 (right).","A is second from the left, so A is in Seat 2.","F is right next to A (Seat 3), then C is next to F (Seat 4).","E is at the right end (Seat 6), and B sits between C and E (Seat 5).","Only Seat 1 is empty, so D sits at the left end."],
+read:"Seats run left to right on the map, with North at the top. The highlighted seats are the people used in this question.",
+trap:"Mixing up left and right. Everyone faces North, so left is West. If they faced South, left and right would flip.",
+ai:"Like a seat-allocation or timetable program: every clue is a constraint, and the solver fills the only slot that satisfies all of them.",
+tip:"Write seat numbers 1 to 6 first. Place the clue with a fixed position (like “extreme right”) before the relative ones."},
+{t:"Two facing rows",title:"Puzzle 2 · Two rows facing each other",setup:"Eight people A to H sit in two rows of four. Row 1 faces South and Row 2 faces North, so every person faces someone in the other row. Seat 1 is the West end and Seat 4 is the East end. Same seat number means directly opposite.",
+row1:["A","B","C","D"],row2:["F","H","E","G"],
+clues:["A sits at the West end of Row 1.","D sits at the East end of Row 1.","B sits next to A.","F sits opposite A.","E sits opposite C.","G sits at the East end of Row 2."],
+steps:["Row 1: A is Seat 1, D is Seat 4, B is next to A (Seat 2), so C takes Seat 3.","Row 2: F is opposite A, so F is Seat 1. E is opposite C, so E is Seat 3.","G is at the East end of Row 2, so G is Seat 4.","The last empty seat in Row 2 is Seat 2, so H sits there, opposite B."],
+read:"Row 1 is at the top (facing South), Row 2 at the bottom (facing North). Dashed lines join people who sit opposite each other.",
+trap:"Thinking “opposite” means diagonal. Opposite means the same seat number in the other row.",
+ai:"Like matching pairs in a data table: each person in Row 1 is paired with exactly one person in Row 2, a one-to-one mapping.",
+tip:"Number the seats 1 to 4 in both rows. “Opposite” always means the same seat number."},
+{t:"Circular table",title:"Puzzle 3 · Round table, facing the centre",setup:"Eight people P, Q, R, S, T, U, V and W sit around a round table, all facing the centre. Remember: when you face the centre, your LEFT is the clockwise direction and your RIGHT is anticlockwise.",
+ring:["P","Q","R","S","T","U","V","W"],
+clues:["P sits at the top of the table.","Q sits immediately to the left of P.","R sits immediately to the left of Q.","T sits opposite P.","S sits between R and T.","W sits immediately to the right of P.","V sits immediately to the right of W."],
+steps:["Place P at the top. Moving clockwise from P is P’s left side.","Q is P’s left, so Q is the next seat clockwise. R is Q’s left, the seat after that.","T is opposite P, four seats away at the bottom.","S sits between R and T, so S fills the seat between them.","W is P’s right, one seat anticlockwise from P. V is W’s right, one more seat anticlockwise.","The only empty seat left is U’s."],
+read:"P is at the top and the seats run clockwise. Small arrows show that everyone faces the centre.",
+trap:"At a round table facing the centre, left and right feel reversed compared with a straight row. Left means clockwise.",
+ai:"Circular structures appear in ring buffers and network rings, where “next” and “previous” wrap around.",
+tip:"Facing the centre, left is clockwise and right is anticlockwise. Fix one person at the top and walk around the table."}
+];
+const Q=[
+{p:0,q:"Who sits at the extreme left end?",o:["A","B","D","F"],a:2,hl:["D"],why:"Seats 2 to 6 are taken by A, F, C, B and E. Only Seat 1 is free, so D sits at the left end."},
+{p:0,q:"Who sits third from the left end?",o:["C","B","E","F"],a:3,hl:["F"],why:"A is Seat 2 and F is immediately right of A, so F is Seat 3."},
+{p:0,q:"Who sits between F and B?",o:["C","A","E","D"],a:0,hl:["F","C","B"],why:"The order is F, C, B, so C is in the middle of F and B."},
+{p:0,q:"How many people sit to the right of A?",o:["3","4","5","2"],a:1,hl:["F","C","B","E"],why:"To the right of A (Seat 2) are Seats 3 to 6: F, C, B and E. That is 4 people."},
+{p:1,q:"Who sits opposite D?",o:["G","H","E","F"],a:0,hl:["D","G"],why:"D is Seat 4 in Row 1, and G is Seat 4 in Row 2, so G sits opposite D."},
+{p:1,q:"Who sits opposite B?",o:["F","E","H","G"],a:2,hl:["B","H"],why:"B is Seat 2 in Row 1. The only seat left in Row 2 is Seat 2, which is H’s."},
+{p:1,q:"Who sits immediately to the West of G?",o:["H","E","C","F"],a:1,hl:["G","E"],why:"G is Seat 4 in Row 2. West means towards Seat 1, so the neighbour in Seat 3 is E."},
+{p:2,q:"Who sits opposite Q?",o:["T","V","S","U"],a:3,hl:["Q","U"],why:"Q is 1 seat clockwise from P. Four seats further round (directly across) is U."},
+{p:2,q:"Who sits between W and U?",o:["V","S","R","T"],a:0,hl:["W","V","U"],why:"Going anticlockwise from P: W, then V, then U. So V is between W and U."},
+{p:2,q:"Who sits opposite S?",o:["V","W","Q","U"],a:1,hl:["S","W"],why:"S is three seats clockwise from P, so the seat across is three seats anticlockwise from P, which is W."}
+];
+const N=Q.length;
+let cur=0,view="welcome",A,play=false,me={name:"",email:""},t0=0,secs=0,tmr=null,saved="",code="",isTeacher=false,warned=false,R=[],X=[],shown={},unsub=null,prev=null,showTbl=false,showEm=false;
+const fresh=()=>Q.map(()=>({sel:null,done:false,first:null,dia:false,exp:false}));
+A=fresh();
+const score=()=>A.filter(a=>a.first===true).length;
+const $=id=>document.getElementById(id);
+function box(x,y,w,h,t,on){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" class="seat${on?" hl":""}"/><text x="${x+w/2}" y="${y+h/2+8}" text-anchor="middle" class="nm">${t}</text>`}
+function dia(pi,hl){const p=P[pi];let s="";
+if(pi===0){s=`<svg viewBox="0 0 600 200" role="img" aria-label="Row of six people facing North"><text x="300" y="24" text-anchor="middle" class="lb">▲ NORTH: everyone faces this way ▲</text>`;
+p.people.forEach((n,i)=>{s+=box(25+i*92,60,80,64,n,hl.includes(n))+`<text x="${65+i*92}" y="148" text-anchor="middle" class="lb">Seat ${i+1}</text>`});
+s+=`<text x="25" y="186" class="lb">◀ West (left end)</text><text x="575" y="186" text-anchor="end" class="lb">East (right end) ▶</text></svg>`}
+else if(pi===1){s=`<svg viewBox="0 0 600 270" role="img" aria-label="Two rows of four facing each other"><text x="40" y="26" class="lb">Row 1 faces South ▼</text><text x="40" y="262" class="lb">Row 2 faces North ▲</text><text x="560" y="26" text-anchor="end" class="lb">West ◀ ▶ East</text>`;
+for(let i=0;i<4;i++){const a=p.row1[i],b=p.row2[i],x=40+i*140;
+s+=`<line x1="${x+50}" y1="106" x2="${x+50}" y2="164" class="lk${hl.includes(a)&&hl.includes(b)?" hl":""}"/>`+box(x,40,100,64,a,hl.includes(a))+box(x,166,100,64,b,hl.includes(b))+`<text x="${x+50}" y="140" text-anchor="middle" class="lb" style="font-size:12px">Seat ${i+1}</text>`}
+s+="</svg>"}
+else{s=`<svg viewBox="0 0 420 420" role="img" aria-label="Eight people around a round table facing the centre"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b5cf6"/></marker></defs><circle cx="210" cy="210" r="95" fill="#1a254266" stroke="#2a3a66" stroke-width="3"/><text x="210" y="206" text-anchor="middle" class="lb">Table</text><text x="210" y="226" text-anchor="middle" class="lb">↻ clockwise = LEFT</text>`;
+p.ring.forEach((n,i)=>{const g=(-90+45*i)*Math.PI/180,c=Math.cos(g),d=Math.sin(g),x=210+150*c,y=210+150*d;
+s+=`<line x1="${210+112*c}" y1="${210+112*d}" x2="${210+88*c}" y2="${210+88*d}" stroke="#8b5cf6" stroke-width="3" marker-end="url(#ar)"/><circle cx="${x}" cy="${y}" r="32" class="seat${hl.includes(n)?" hl":""}"/><text x="${x}" y="${y+8}" text-anchor="middle" class="nm">${n}</text>`});
+s+="</svg>"}
+return s}
+function puzzleCard(pi){const p=P[pi];return `<div class="card"><span class="chip">${p.t}</span><h2 style="margin-top:8px">${p.title}</h2><p class="mut" style="margin:0">${p.setup}</p><h3>Clues</h3><ol class="cl">${p.clues.map(c=>`<li>${c}</li>`).join("")}</ol></div>`}
+function explain(i){const q=Q[i],p=P[q.p];return `<div class="card" style="border-color:var(--v)"><h2>Detailed explanation</h2>
+<h3>1. Correct answer</h3><p style="margin:0">Option ${q.a+1}: <b>${q.o[q.a]}</b></p>
+<h3>2. Step-by-step seating</h3><ol class="cl">${p.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+<h3>3. Why this answer</h3><p style="margin:0">${q.why}</p>
+<h3>4. Reading the diagram</h3><p style="margin:0">${p.read}</p>
+<h3>5. Common trap</h3><p style="margin:0">${p.trap}</p>
+<h3>6. AI connection</h3><p style="margin:0">${p.ai}</p></div>`}
+function render(){const app=$("app");if(extra())return;$("hud").hidden=view!=="quiz";
+if(view==="welcome"){app.innerHTML=`<div class="card"><h2>Welcome, future AI leader</h2><p class="mut">Solve 3 easy seating puzzles (10 questions). Every question has a seating diagram and a full explanation, so you learn the method instead of guessing.</p>
+<div class="grid">${P.map((p,i)=>`<div class="card" style="margin:0;background:var(--card2)"><span class="chip">${p.t}</span><p style="margin:8px 0 0">${["6 people in a row, all facing North.","8 people in two rows of 4, facing each other.","8 people at a round table, facing the centre."][i]}</p></div>`).join("")}</div>
+<h3>Rules to remember</h3><ol class="cl"><li>Facing North: your left is West, your right is East.</li><li>In two facing rows, “opposite” means the same seat number in the other row.</li><li>Facing the centre of a round table: left is clockwise, right is anticlockwise.</li><li>Use only the clues. Do not guess from real life.</li></ol>
+<div class="row"><button class="pri" onclick="enter()">🏆 Play: Class Challenge</button><button onclick="start()">Practice Mode</button>${isTeacher?`<button onclick="dash()">👩‍🏫 Teacher Dashboard</button>`:""}</div></div>`;return}
+if(view==="quiz"){const q=Q[cur],a=A[cur];
+$("qn").textContent=`Question ${cur+1} of ${N}`;$("sc").textContent=`Score: ${score()}`;$("pb").style.width=((cur+1)/N*100)+"%";
+let h=puzzleCard(q.p)+`<div class="card"><h2>Q${cur+1}. ${q.q}</h2>`+q.o.map((t,k)=>`<button class="op ${a.done?(k===q.a?"ok":(k===a.sel?"bad":"")):(a.sel===k?"sel":"")}" onclick="pick(${k})" ${a.done?"disabled":""} aria-pressed="${a.sel===k}"><b>${L[k]}</b><span>${t}</span></button>`).join("");
+if(a.done){const ok=a.sel===q.a;h+=`<div class="fb ${ok?"ok":"bad"}" role="status"><b>${ok?"✅ Correct!":"❌ Not quite."}</b> ${ok?"":`The answer is <b>${q.o[q.a]}</b>. `}${q.why}</div>`}
+h+=`<div class="row"><button class="pri" onclick="submit()" ${a.sel===null||a.done?"disabled":""}>Submit Answer</button><button onclick="tog('dia')" ${a.done?"":"disabled"}>${a.dia?"Hide":"Show"} Seating Diagram</button><button onclick="tog('exp')" ${a.done?"":"disabled"}>${a.exp?"Hide":"Show"} Detailed Explanation</button>${a.done?`<button onclick="retry()">Retry Question</button>`:""}</div>`;
+if(a.done)h+=`<p class="mut" style="margin:10px 0 0;font-size:14px">Retry is for practice. Your score counts your first attempt.</p>`;
+h+="</div>";
+if(a.dia)h+=`<div class="card"><h2>Seating diagram</h2>${dia(q.p,q.hl)}<p class="mut" style="margin:0;text-align:center;font-size:15px">${P[q.p].read}</p></div>`;
+if(a.exp)h+=explain(cur);
+h+=`<div class="row" style="justify-content:space-between"><button onclick="nav(-1)" ${cur===0?"disabled":""}>← Previous</button>${cur===N-1?`<button class="pri" onclick="finish()">See Results</button>`:`<button class="pri" onclick="nav(1)">Next →</button>`}</div>`;
+app.innerHTML=h;return}
+if(view==="results"){const s=score(),pct=Math.round(s/N*100),f=s>=9?"Logic Master":s>=7?"Strong Reasoner":s>=5?"Logic in Progress":"Practice and Improve";
+const miss=[...new Set(Q.filter((q,i)=>A[i].first!==true).map(q=>q.p))];
+app.innerHTML=`<div class="card" style="text-align:center"><h2>Final results</h2><div class="big">${s}<span class="mut" style="font-size:28px">/${N}</span></div><p style="font-size:22px;margin:10px 0 0"><b>${pct}%</b> · ${N-s} incorrect</p>${play?playInfo():""}<p style="font-size:24px;font-weight:700;margin:8px 0;color:var(--c)">${f}</p>
+<div style="text-align:left"><h3>Your learning tip</h3><p style="margin:0">${miss.length?miss.map(i=>`<b>${P[i].t}:</b> ${P[i].tip}`).join("<br><br>"):"Perfect round! Next, try puzzles with more clues and mixed directions."}</p></div>
+<div class="row" style="justify-content:center"><button class="pri" onclick="view='review';render();scrollTo(0,0)">Review All Answers</button>${play?"":`<button onclick="restart()">Retry Quiz</button>`}</div></div>`;return}
+if(view==="review"){let h=`<div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Review all answers</h2><div class="row" style="margin:0"><button onclick="view='results';render();scrollTo(0,0)">← Results</button>${play?"":`<button class="pri" onclick="restart()">Retry Quiz</button>`}</div></div>`;
+Q.forEach((q,i)=>{const a=A[i],ok=a.first===true;h+=`<div class="card"><span class="chip">${P[q.p].t}</span> <span class="chip" style="border-color:${ok?"var(--ok)":"var(--bad)"}">${ok?"Correct":"Missed"}</span><h2 style="margin-top:8px">Q${i+1}. ${q.q}</h2><p style="margin:0"><b>Correct answer:</b> ${q.o[q.a]}</p><p class="mut" style="margin:4px 0 0">${q.why}</p>${dia(q.p,q.hl)}</div>`});
+app.innerHTML=h}}
+function start(){play=false;view="quiz";render();scrollTo(0,0)}
+function pick(k){if(A[cur].done)return;A[cur].sel=k;render()}
+function submit(){const a=A[cur];if(a.sel===null||a.done)return;a.done=true;if(a.first===null)a.first=(a.sel===Q[cur].a);render()}
+function retry(){const a=A[cur];a.sel=null;a.done=false;a.dia=false;a.exp=false;render()}
+function tog(k){A[cur][k]=!A[cur][k];render()}
+function nav(d){cur=Math.max(0,Math.min(N-1,cur+d));render();scrollTo(0,0)}
+function finish(){view="results";render();scrollTo(0,0)}
+function restart(){A=fresh();cur=0;view="quiz";render();scrollTo(0,0)}
+const esc=t=>String(t).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
+const fmt=n=>Math.floor(n/60)+":"+String(n%60).padStart(2,"0");
+const el=()=>Math.round((Date.now()-t0)/1000);
+function extra(){const app=$("app");
+if(view==="enter"){$("hud").hidden=true;app.innerHTML=`<div class="card"><h2>🏆 Class Challenge</h2><p class="mut">Answer all 10 questions, then submit. You get one attempt and no feedback until you submit. Your score and your time decide your rank, and the top 3 get the cheers!</p><label>Full name<br><input id="nm" autocomplete="name" maxlength="60" value="${esc(me.name)}"></label><br><br><label>Email ID<br><input id="em" type="email" autocomplete="email" maxlength="80" value="${esc(me.email)}"></label><p id="er" style="color:var(--bad);margin:8px 0 0" role="alert"></p><div class="row"><button class="pri" onclick="begin()">Start (timer begins)</button><button onclick="view='welcome';render()">Back</button></div></div>`;return true}
+if(view==="already"){$("hud").hidden=true;app.innerHTML=`<div class="card"><h2>You have already played</h2><p>${esc(prev.name||"")}, your result is with your teacher: <b>${prev.score}/${N}</b> in <b>${fmt(prev.secs)}</b>. Wait for the class announcement!</p><div class="row"><button onclick="view='welcome';render()">Back</button></div></div>`;return true}
+if(view==="play"){playView();return true}
+if(view==="dash")return true;
+return false}
+function playView(){const q=Q[cur],a=A[cur],n=A.filter(x=>x.sel!==null).length,un=N-n;
+$("hud").hidden=false;$("qn").textContent=`Question ${cur+1} of ${N} · ${n} answered`;$("sc").textContent="⏱ "+fmt(el());$("pb").style.width=(n/N*100)+"%";
+let h=puzzleCard(q.p)+`<div class="card"><h2>Q${cur+1}. ${q.q}</h2>`+q.o.map((t,k)=>`<button class="op ${a.sel===k?"sel":""}" onclick="pick(${k})" aria-pressed="${a.sel===k}"><b>${L[k]}</b><span>${t}</span></button>`).join("")+`<p class="mut" style="margin:8px 0 0;font-size:14px">You can change answers until you press Submit Quiz.</p></div>`;
+h+=`<div class="row" style="justify-content:center">${A.map((x,i)=>`<button onclick="jump(${i})" aria-label="Go to question ${i+1}" style="min-width:44px;padding:6px;${i===cur?"border-color:var(--c);":""}${x.sel!==null?"background:#16385a":""}">${i+1}</button>`).join("")}</div>`;
+if(warned&&un>0)h+=`<div class="fb bad" role="alert">${un} question${un>1?"s are":" is"} still unanswered and will count as wrong. Press Submit Quiz again to finish anyway.</div>`;
+h+=`<div class="row" style="justify-content:space-between"><button onclick="nav(-1)" ${cur===0?"disabled":""}>← Previous</button>${cur===N-1?"":`<button onclick="nav(1)">Next →</button>`}<button class="pri" onclick="submitPlay()">Submit Quiz</button></div>`;
+$("app").innerHTML=h}
+function jump(i){cur=i;render();scrollTo(0,0)}
+async function enter(){view="enter";render();
+try{const db=await claude.use("db"),u=await claude.use("user"),id=u&&await u.id();if(db&&id){const d=await db.doc("data/users/"+id+"/attempt_r1").get();if(d.exists&&view==="enter"){prev=d.data();view="already";render()}}}catch(e){}}
+function begin(){const n=$("nm").value.trim(),e=$("em").value.trim();me={name:n,email:e};
+if(n.length<2){$("er").textContent="Please enter your full name.";return}
+if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){$("er").textContent="Please enter a valid email ID.";return}
+play=true;A=fresh();cur=0;warned=false;t0=Date.now();clearInterval(tmr);
+tmr=setInterval(()=>{if(view==="play")$("sc").textContent="⏱ "+fmt(el())},1000);view="play";render();scrollTo(0,0)}
+function submitPlay(){if(view!=="play")return;const un=A.filter(x=>x.sel===null).length;if(un>0&&!warned){warned=true;render();return}
+secs=el();clearInterval(tmr);A.forEach((x,i)=>{x.done=true;x.first=x.sel===Q[i].a});view="results";saved="pending";render();scrollTo(0,0);save()}
+async function save(){const sc=score(),d={name:me.name,email:me.email,score:sc,secs,at:Date.now(),ans:A.map(x=>x.sel)};
+code="SLL1."+btoa(unescape(encodeURIComponent(JSON.stringify({n:d.name,e:d.email,s:sc,t:secs,a:d.at}))));
+try{const db=await claude.use("db"),u=await claude.use("user"),id=u&&await u.id();if(!db||!id)throw 0;
+await db.doc("results/"+id).set(d);await db.doc("data/users/"+id+"/attempt_r1").set({name:d.name,score:sc,secs});saved="ok"}catch(e){saved="fail"}
+if(view==="results")render()}
+function playInfo(){return `<p style="font-size:20px;margin:6px 0">⏱ Time: <b>${fmt(secs)}</b> · ${esc(me.name)}</p>`+(saved==="ok"?`<div class="fb ok">✅ Your result is submitted. Wait for your teacher’s announcement!</div>`:saved==="pending"?`<div class="fb ok">Sending your result…</div>`:`<div class="fb bad" style="text-align:left">⚠️ Automatic submit is not available for your account. Copy this code and send it to your teacher on WhatsApp or email:<textarea id="cd" readonly rows="3" style="margin-top:8px;font:13px monospace" onclick="this.select()">${code}</textarea><div class="row"><button onclick="cp()">Copy code</button></div></div>`)}
+function cp(){const t=$("cd");t.select();try{navigator.clipboard.writeText(t.value)}catch(e){document.execCommand("copy")}}
+const rank=l=>l.slice().sort((a,b)=>b.score-a.score||a.secs-b.secs||a.at-b.at);
+async function dash(){view="dash";shown={};$("hud").hidden=true;
+$("app").innerHTML=`<div class="row" style="justify-content:space-between;align-items:center;margin:0"><h2 style="margin:0">👩‍🏫 Teacher Dashboard</h2><button onclick="view='welcome';render()">← Back</button></div><div id="dyn"></div><div class="card"><h3 style="margin-top:0">Add result codes</h3><p class="mut" style="margin:0 0 8px">For students who could not auto-submit: paste the WhatsApp or email text containing their codes (they start with SLL1.).</p><textarea id="cds" rows="3" style="max-width:none"></textarea><div class="row"><button onclick="addCodes()">Add codes</button></div></div>`;
+drawDash();
+if(!unsub){try{const db=await claude.use("db");if(db)unsub=db.collection("results").onSnapshot(sn=>{R=sn.docs.map(d=>d.data());if(view==="dash")drawDash()},e=>{})}catch(e){}}}
+function addCodes(){const t=$("cds").value,re=/SLL1\.([A-Za-z0-9+\/=]+)/g;let m;
+while((m=re.exec(t))){try{const o=JSON.parse(decodeURIComponent(escape(atob(m[1]))));if(!X.some(x=>x.email===o.e&&x.at===o.a))X.push({name:o.n,email:o.e,score:o.s,secs:o.t,at:o.a})}catch(e){}}
+$("cds").value="";drawDash()}
+function drawDash(){const mp=new Map();R.concat(X).forEach(r=>{const k=String(r.email).toLowerCase(),o=mp.get(k);if(!o||r.at<o.at)mp.set(k,r)});
+const rk=rank([...mp.values()]),n=rk.length,cnt=f=>rk.filter(f).length,avg=n?(rk.reduce((a,r)=>a+r.score,0)/n).toFixed(1):"–";
+const st=(v,l)=>`<div class="card" style="margin:0;text-align:center"><div class="big">${v}</div><div class="mut">${l}</div></div>`;
+let h=`<div class="grid" style="margin-top:14px">${st(n,"submitted")}${st(cnt(r=>r.score===N),`scored ${N}/${N}`)}${st(cnt(r=>r.score>=7),"scored 7 or more")}${st(avg,"average score")}</div>`;
+h+=`<div class="card"><div class="row" style="justify-content:space-between;align-items:center;margin:0"><h2 style="margin:0">🏆 Winners</h2><button class="pri" onclick="reveal()">🎉 Reveal next winner</button></div><div style="display:flex;gap:10px;align-items:flex-end;justify-content:center;margin-top:14px">`+[2,1,3].map(p=>{const r=rk[p-1],hh={1:200,2:160,3:130}[p],md=["","🥇","🥈","🥉"][p];
+return `<div style="flex:1;max-width:220px;min-height:${hh}px;background:${p===1?"linear-gradient(#8b5cf6,#4f8cff)":"var(--card2)"};border-radius:14px 14px 0 0;padding:10px;text-align:center;display:flex;flex-direction:column;justify-content:center"><div style="font-size:40px">${md}</div>${r?(shown[p]?`<b style="font-size:20px">${esc(r.name)}</b><div>${r.score}/${N} · ${fmt(r.secs)}</div>`:`<b style="font-size:28px">?</b>`):`<b>—</b>`}<div class="mut">Rank ${p}</div></div>`}).join("")+`</div><p class="mut" style="margin:10px 0 0;font-size:14px">Rank = highest score first, then fastest time.</p></div>`;
+h+=`<div class="card" style="overflow-x:auto"><div class="row" style="margin:0"><button onclick="showTbl=!showTbl;drawDash()">${showTbl?"Hide":"Show"} full ranking</button><button onclick="showEm=!showEm;drawDash()">${showEm?"Hide":"Show"} emails</button></div>`;
+if(showTbl)h+=`<table style="margin-top:12px"><tr><th>#</th><th>Name</th>${showEm?"<th>Email</th>":""}<th>Score</th><th>Time</th></tr>${rk.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name)}</td>${showEm?`<td>${esc(r.email)}</td>`:""}<td>${r.score}/${N}</td><td>${fmt(r.secs)}</td></tr>`).join("")}</table>`;
+h+="</div>";$("dyn").innerHTML=h}
+function reveal(){const nx=[3,2,1].find(p=>!shown[p]);if(!nx)return;shown[nx]=true;drawDash();boom();clap()}
+function boom(){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const c=document.createElement("canvas");c.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:99";c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);const x=c.getContext("2d"),ps=Array.from({length:150},()=>({x:innerWidth/2,y:innerHeight*.6,vx:(Math.random()-.5)*18,vy:-Math.random()*17-4,s:6+Math.random()*6,c:`hsl(${Math.random()*360},90%,60%)`,r:Math.random()*6}));let f=0;(function a(){x.clearRect(0,0,c.width,c.height);ps.forEach(q=>{q.x+=q.vx;q.y+=q.vy;q.vy+=.35;q.r+=.2;x.fillStyle=q.c;x.save();x.translate(q.x,q.y);x.rotate(q.r);x.fillRect(-q.s/2,-q.s/2,q.s,q.s*.6);x.restore()});if(++f<130)requestAnimationFrame(a);else c.remove()})()}
+function clap(){try{const C=new(window.AudioContext||window.webkitAudioContext)(),n=C.sampleRate*2,b=C.createBuffer(1,n,C.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++){const t=i/C.sampleRate;d[i]=(Math.random()*2-1)*(Math.random()<.02?1:.15)*Math.max(0,1-t/2)}const o=C.createBufferSource();o.buffer=b;const g=C.createGain();g.gain.value=.5;o.connect(g);g.connect(C.destination);o.start()}catch(e){}}
+try{claude.use("user").then(u=>{isTeacher=!!(u&&(u.isOwner()||u.canEdit()));if(view==="welcome")render()}).catch(()=>{})}catch(e){}
+
+render();
+</script></body></html>
